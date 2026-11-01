@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ты будешь моей женой?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg1: #ffe3d1;
+    --bg2: #ffc9b9;
+    --card: #fff6ee;
+    --ink: #7a2e2e;
+    --rose: #ee6f7e;
+    --rose-deep: #d94f62;
+    --honey: #f7b267;
+    --soft: #f3d3c3;
+    --shadow: rgba(217, 79, 98, .28);
+    color-scheme: light;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg1: #3a1f26;
+      --bg2: #54282e;
+      --card: #4a2a2c;
+      --ink: #ffe3d1;
+      --soft: #6a3b38;
+      --shadow: rgba(0, 0, 0, .4);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg1: #3a1f26; --bg2: #54282e; --card: #4a2a2c; --ink: #ffe3d1;
+    --soft: #6a3b38; --shadow: rgba(0, 0, 0, .4); color-scheme: dark;
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: radial-gradient(circle at 20% 15%, var(--bg1), var(--bg2) 85%);
+    background-color: var(--bg2);
+    color: var(--ink);
+    font-family: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+
+  .hearts { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
+  .heart {
+    position: absolute; bottom: -40px;
+    color: var(--rose); opacity: .0;
+    animation: float linear forwards;
+    user-select: none;
+  }
+  @keyframes float {
+    0% { transform: translateY(0) rotate(-8deg); opacity: 0; }
+    10% { opacity: .55; }
+    100% { transform: translateY(-110vh) rotate(12deg); opacity: 0; }
+  }
+
+  .card {
+    position: relative;
+    width: min(92vw, 520px);
+    padding: 48px 28px 40px;
+    background: var(--card);
+    border-radius: 36px;
+    text-align: center;
+    box-shadow: 0 24px 60px var(--shadow);
+    animation: pop .8s cubic-bezier(.2, 1.2, .4, 1) both;
+  }
+  @keyframes pop { from { transform: scale(.85) translateY(20px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+  .bear { font-size: 64px; line-height: 1; margin-bottom: 8px; }
+  h1 {
+    font-family: "Pacifico", "Comic Sans MS", cursive;
+    font-weight: 400;
+    font-size: clamp(32px, 8vw, 46px);
+    line-height: 1.25;
+    margin: 0 0 32px;
+    color: var(--rose-deep);
+  }
+  .answers { display: flex; justify-content: center; align-items: center; gap: 18px; min-height: 64px; flex-wrap: wrap; }
+
+  button {
+    font-family: inherit; font-weight: 800; font-size: 20px;
+    border: none; border-radius: 999px; cursor: pointer;
+    padding: 14px 38px;
+    transition: transform .15s ease, box-shadow .15s ease, left .35s cubic-bezier(.3, 1.4, .5, 1), top .35s cubic-bezier(.3, 1.4, .5, 1);
+  }
+  button:focus-visible { outline: 3px solid var(--honey); outline-offset: 3px; }
+  #yes {
+    background: linear-gradient(135deg, var(--rose), var(--rose-deep));
+    color: #fff;
+    box-shadow: 0 8px 20px var(--shadow);
+  }
+  #yes:hover { transform: scale(1.08); }
+  #yes:active { transform: scale(.97); }
+  #no { background: var(--soft); color: var(--ink); }
+  #no.run { position: fixed; z-index: 10; }
+
+  .done { display: none; }
+  .done h2 {
+    font-family: "Pacifico", "Comic Sans MS", cursive;
+    font-weight: 400;
+    font-size: clamp(34px, 9vw, 52px);
+    margin: 0 0 12px; color: var(--rose-deep);
+  }
+  .done p { margin: 0; font-size: 20px; font-weight: 600; }
+  .card.accepted .ask { display: none; }
+  .card.accepted .done { display: block; animation: pop .6s cubic-bezier(.2, 1.4, .4, 1) both; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .heart { display: none; }
+    .card, .card.accepted .done { animation: none; }
+    button { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="hearts" id="hearts" aria-hidden="true"></div>
+
+  <main class="card" id="card">
+    <div class="ask">
+      <div class="bear" aria-hidden="true">🧸</div>
+      <h1>Ты будешь моей женой?</h1>
+      <div class="answers">
+        <button id="yes" type="button">Да</button>
+        <button id="no" type="button">Нет</button>
+      </div>
+    </div>
+
+    <div class="done" role="status" aria-live="polite">
+      <div class="bear" aria-hidden="true">💍</div>
+      <h2>Я так и знал, хехе</h2>
+      <p>Люблю тебя ❤️</p>
+    </div>
+  </main>
+
+<script>
+(function () {
+  var hearts = document.getElementById("hearts");
+  var yes = document.getElementById("yes");
+  var no = document.getElementById("no");
+  var card = document.getElementById("card");
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var symbols = ["❤", "💗", "💖", "🧡", "💛"];
+  var scale = 1;
+
+  function spawnHeart(burst) {
+    if (reduce) return;
+    var h = document.createElement("span");
+    h.className = "heart";
+    h.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+    h.style.left = Math.random() * 100 + "vw";
+    h.style.fontSize = (14 + Math.random() * 26) + "px";
+    var dur = burst ? 3 + Math.random() * 3 : 8 + Math.random() * 8;
+    h.style.animationDuration = dur + "s";
+    hearts.appendChild(h);
+    setTimeout(function () { h.remove(); }, dur * 1000 + 200);
+  }
+
+  setInterval(function () { spawnHeart(false); }, 1200);
+  for (var i = 0; i < 6; i++) setTimeout(function () { spawnHeart(false); }, i * 250);
+
+  function runAway() {
+    var pad = 12;
+    var w = no.offsetWidth, h = no.offsetHeight;
+    var vw = window.innerWidth, vh = window.innerHeight;
+    var yr = yes.getBoundingClientRect();
+    var x, y, tries = 0;
+    do {
+      x = pad + Math.random() * Math.max(1, vw - w - pad * 2);
+      y = pad + Math.random() * Math.max(1, vh - h - pad * 2);
+      tries++;
+    } while (tries < 30 && x < yr.right + 20 && x + w > yr.left - 20 && y < yr.bottom + 20 && y + h > yr.top - 20);
+    no.classList.add("run");
+    no.style.left = x + "px";
+    no.style.top = y + "px";
+
+    scale = Math.min(scale + 0.1, 2);
+    yes.style.fontSize = (20 * scale) + "px";
+  }
+
+  ["pointerenter", "pointerdown", "touchstart", "focus"].forEach(function (ev) {
+    no.addEventListener(ev, function (e) { e.preventDefault(); runAway(); }, { passive: false });
+  });
+  no.addEventListener("click", function (e) { e.preventDefault(); runAway(); });
+
+  yes.addEventListener("click", function () {
+    card.classList.add("accepted");
+    no.style.display = "none";
+    for (var i = 0; i < 40; i++) setTimeout(function () { spawnHeart(true); }, i * 70);
+  });
+})();
+</script>
+</body>
+</html>
